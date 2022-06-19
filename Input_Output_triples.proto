@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+message TriplePartShare {
+	int64 share = 1;
+	enum ABC {
+	A = 0;
+	B = 1;
+	C = 2;
+	}
+	ABC abc = 2;
+	AssociatedTriple assTriple = 3;
+}
+
+message AssociatedTriple {
+	int64 share_a = 1;
+	int64 share_b = 2;
+	int64 share_c = 3;
+}
+
+message TripleShare {
+	int32 player_nr = 1;
+	TriplePartShare a = 2;
+	TriplePartShare b = 3;
+	TriplePartShare c = 4;
+}

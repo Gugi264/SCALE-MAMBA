@@ -166,7 +166,7 @@ All rights reserved
  * a circuit using Search_SubCircuit. Only used to simplify the modp
  * circuit
  */
-#define iter_modp_Search_SubCircuit 60
+#define iter_modp_Search_SubCircuit 5 // was 60
 
 /* Default sleep setting, for when we put threads to sleep 
  * This is a quarter of a second

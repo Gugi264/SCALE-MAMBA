@@ -422,6 +422,8 @@ void init_conversion()
 
   cout << "Going to try and simplify circuit a bit" << endl;
   cout << "\tPlease be a little patient, it is worth it in the long run :-) " << endl;
+  cout << "Stopping at: " << iter_modp_Search_SubCircuit << " iterations " << endl;
+  cout << "Change in config.h if it takes too lang (or too short)" << endl;
   int numI= 0;
   bool flag= true;
   while (flag && numI < iter_modp_Search_SubCircuit)
