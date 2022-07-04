@@ -7,6 +7,11 @@ All rights reserved
 
 #include "Input_Output_Simple.h"
 #include "Exceptions/Exceptions.h"
+#include "Input_Output_Triples.pb.h"
+#include <fcntl.h>
+
+int tripleCounter = 0;
+AssociatedTriple assTriple;
 
 long Input_Output_Simple::open_channel(unsigned int channel)
 {
@@ -75,11 +80,47 @@ void Input_Output_Simple::public_output_int(const long output, unsigned int chan
   cout << " = 0x" << hex << output << dec << endl;
 }
 
+std::string string_to_hex(const std::string& input)
+{
+  static const char hex_digits[] = "0123456789ABCDEF";
+
+  std::string output;
+  output.reserve(input.length() * 2);
+  for (unsigned char c : input)
+    {
+      output.push_back(hex_digits[c >> 4]);
+      output.push_back(hex_digits[c & 15]);
+    }
+  return output;
+}
+
 void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
 {
+//  switch (tripleCounter)
+//    {
+//      case 0:
+//        assTriple.set_share_a(0);
+//    }
   (*outf) << "Output channel " << channel << " : ";
   S.output(*outf, human);
+
+  //(*outf) << "My OutPut: ";
+  bigint te;
+  gfp share = S.get_share(0);
+  to_bigint(te, share, true);
+  (*outf) << "Output Bigint: " << te << endl;
+  stringstream bigintString;
+  bigintString << te;
+  assTriple.set_share_a(bigintString.str());
+  assTriple.set_share_b(bigintString.str());
+  assTriple.set_share_c(bigintString.str());
+  ofstream myfile;
+  myfile.open("myfile" + to_string(S.get_player()));
+  assTriple.SerializeToOstream(&myfile);
+  myfile.close();
+  //(*outf) << "string as hex: " << string_to_hex(tmp) << endl;
 }
+
 
 Share Input_Output_Simple::input_share(unsigned int channel)
 {

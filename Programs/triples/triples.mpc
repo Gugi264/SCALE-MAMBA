@@ -1,4 +1,4 @@
-@for_range(4)
+@for_range(1)
 def f(i):
     a,b,c = sint.get_random_triple()
     print_ln("this should be equal %s, %s", (a*b).reveal(), c.reveal())
