@@ -17,6 +17,7 @@ All rights reserved
 #include "Input_Output_Base.h"
 
 #include <fstream>
+#include <sqlite3.h>
 using namespace std;
 
 class Input_Output_Simple : public Input_Output_Base
@@ -60,6 +61,7 @@ public:
   virtual void debug_output(const stringstream &ss);
 
   virtual void crash(unsigned int PC, unsigned int thread_num);
+
 };
 
 #endif

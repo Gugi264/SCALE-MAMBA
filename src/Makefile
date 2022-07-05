@@ -5,7 +5,7 @@ CC = g++
 ARCH = -mtune=native -maes -mpclmul -msse4.1 -mavx -mbmi2 -madx -march=core2
 CFLAGS = -Wall -std=c++14 -pedantic -Wextra -pthread -I$(ROOT)/src $(ARCH) $(FLAGS) $(OPT) -I$(OSSL)/include
 CPPFLAGS = $(CFLAGS)
-LDLIBS = -L/$(OSSL)/lib -lm -lssl -lcrypto -lmpirxx -lmpir -lcryptopp $(LDFLAGS) -L/usr/local/lib -lprotobuf
+LDLIBS = -L/$(OSSL)/lib -lm -lssl -lcrypto -lmpirxx -lmpir -lcryptopp $(LDFLAGS) -L/usr/local/lib -lsqlite3
 
 all: $(LIB) Setup.x Player.x
 
