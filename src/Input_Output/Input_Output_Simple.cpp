@@ -96,8 +96,8 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 
 void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
 {
-//  (*outf) << "Output channel " << channel << " : ";
-//  S.output(*outf, human);
+ // (*outf) << "Output channel " << channel << " : ";
+  //S.output(*outf, human);
 
 
   if (db == NULL) {
@@ -125,7 +125,7 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
 
       rc = sqlite3_exec(db, sqlCreate.str().c_str(), callback, 0, &zErrMsg);
       if( rc != SQLITE_OK ){
-          fprintf(stderr, "SQL error: %s\n", zErrMsg);
+          fprintf(stderr, "SQL error create table: %s\n", zErrMsg);
           sqlite3_free(zErrMsg);
         } else {
           fprintf(stdout, "Table created successfully\n");
@@ -145,7 +145,7 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
         tripleCounter++;
         return ;
       case 2:
-        share_c << te; // no return here, we want to continue
+        share_c << te;
     }
 
   stringstream sql;
@@ -153,17 +153,16 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
   int rc;
   sql << "INSERT INTO triples (shareA, shareB, shareC)";
   sql << "VALUES ('" << share_a.str() << "', '" << share_b.str() << "', '" << share_c.str() << "' );";
-  //cout << sql.str() << endl;
   rc = sqlite3_exec(db, sql.str().c_str(), callback, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
-      fprintf(stderr, "SQL error: %s\n", zErrMsg);
+      fprintf(stderr, "SQL error while insert: %s\n", zErrMsg);
       sqlite3_free(zErrMsg);
     }
 
+  tripleCounter = 0;
   stringstream().swap(share_a);
   stringstream().swap(share_b);
   stringstream().swap(share_c);
-  tripleCounter = 0;
 
 }
 
