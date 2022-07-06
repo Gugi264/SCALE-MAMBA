@@ -13,11 +13,14 @@ All rights reserved
 
 int tripleCounter = 0;
 int sqlCounter = 0;
-stringstream share_a;
-stringstream share_b;
-stringstream share_c;
+vector<string> a_shares;
+vector<string> b_shares;
+vector<string> c_shares;
 sqlite3 *db;
 sqlite3_stmt *pStmt;
+char *sql = "INSERT INTO triples (shareA, shareB, shareC) VALUES(?,?,?)";
+bool firstRun = true;
+const int cacheSize = 10000;
 
 long Input_Output_Simple::open_channel(unsigned int channel)
 {
@@ -134,63 +137,70 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
         }
     }
 
+  if (firstRun) {
+      int rc = sqlite3_prepare_v2(db, sql, -1, &pStmt, 0);
+      if (rc != SQLITE_OK) {
+          cout << "Cannot prepare statement: " << sqlite3_errmsg(db) << endl;
+          return ;
+        }
+      firstRun = false;
+    }
+
+
   if (sqlCounter == 0) {
       sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+      a_shares.reserve(cacheSize);
+      b_shares.reserve(cacheSize);
+      c_shares.reserve(cacheSize);
     }
 
   bigint te;
   gfp share = S.get_share(0);
   to_bigint(te, share, true);
+  stringstream tmpstringstream;
+  tmpstringstream << te;
+  string tmpString = tmpstringstream.str();
   switch (tripleCounter) {
       case 0:
-        share_a << te;
+        a_shares.push_back(tmpString);
         tripleCounter++;
-        return ;
+        return;
       case 1:
-        share_b << te;
+        b_shares.push_back(tmpString);
         tripleCounter++;
         return ;
       case 2:
-        share_c << te;
+        c_shares.push_back(tmpString);
+       //no return here as we want to perpare the sql statement if we have all 3 shares
     }
-
-  char* sql = "INSERT INTO triples (shareA, shareB, shareC) VALUES(?,?,?)";
-
+  sqlCounter++;
   int rc;
-  rc = sqlite3_prepare_v2(db, sql, -1, &pStmt, 0);
-  if (rc != SQLITE_OK) {
-      cout << "Cannot prepare statement: " << sqlite3_errmsg(db) << endl;
-      return ;
-    }
-  const string& tmpA = share_a.str();
-  const char* cstrA = tmpA.c_str();
-  const string& tmpB = share_b.str();
-  const char* cstrB = tmpB.c_str();
-  const string& tmpC = share_c.str();
-  const char* cstrC = tmpC.c_str();
-  rc = sqlite3_bind_text(pStmt, 1, cstrA, tmpA.size(), SQLITE_STATIC);
+  rc = sqlite3_bind_text(pStmt, 1, a_shares.back().c_str(), a_shares.back().size(), SQLITE_STATIC);
   if (rc != SQLITE_OK) {
       cout << "Bind failed: " << sqlite3_errmsg(db) << endl;
     }
-  sqlite3_bind_text(pStmt, 2, cstrB, tmpB.size(), SQLITE_STATIC);
-  sqlite3_bind_text(pStmt, 3, cstrC, tmpC.size(), SQLITE_STATIC);
+  sqlite3_bind_text(pStmt, 2, b_shares.back().c_str(), b_shares.back().size(), SQLITE_STATIC);
+  sqlite3_bind_text(pStmt, 3, c_shares.back().c_str(), c_shares.back().size(), SQLITE_STATIC);
   rc = sqlite3_step(pStmt);
   if (rc != SQLITE_DONE) {
       cout << "Execution failed: " << sqlite3_errmsg(db) << endl;
     }
-
-  if (sqlCounter == 10000) {
+  sqlite3_reset(pStmt);
+  sqlite3_clear_bindings(pStmt);
+  if (sqlCounter == cacheSize) { // 10000 is around 1.2MB
       sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
-      sqlite3_finalize(pStmt);
+      //sqlite3_commit_hook(db, NULL, NULL);
+      //rc = sqlite3_finalize(pStmt);
+      //cout << "writing to db....." << endl;
+//      if (rc != SQLITE_OK) {
+//          cout << "Finalize failed: " << sqlite3_errmsg(db) << endl;
+//        }
       sqlCounter = 0;
-      sqlite3_reset(pStmt);
+      a_shares.clear();
+      b_shares.clear();
+      c_shares.clear();
     }
-
-
   tripleCounter = 0;
-  stringstream().swap(share_a);
-  stringstream().swap(share_b);
-  stringstream().swap(share_c);
 
 }
 
