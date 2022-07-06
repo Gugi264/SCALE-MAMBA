@@ -585,7 +585,6 @@ void main_logic(
     }
 
   Destroy_SSL_CTX(ctx);
-
   printf("End of prog\n");
   fflush(stdout);
 }

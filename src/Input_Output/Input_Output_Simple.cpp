@@ -12,10 +12,12 @@ All rights reserved
 
 
 int tripleCounter = 0;
+int sqlCounter = 0;
 stringstream share_a;
 stringstream share_b;
 stringstream share_c;
 sqlite3 *db;
+sqlite3_stmt *pStmt;
 
 long Input_Output_Simple::open_channel(unsigned int channel)
 {
@@ -96,8 +98,8 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 
 void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
 {
- // (*outf) << "Output channel " << channel << " : ";
-  //S.output(*outf, human);
+//  (*outf) << "Output channel " << channel << " : ";
+//  S.output(*outf, human);
 
 
   if (db == NULL) {
@@ -132,6 +134,10 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
         }
     }
 
+  if (sqlCounter == 0) {
+      sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+    }
+
   bigint te;
   gfp share = S.get_share(0);
   to_bigint(te, share, true);
@@ -148,16 +154,38 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
         share_c << te;
     }
 
-  stringstream sql;
-  char *zErrMsg = 0;
+  char* sql = "INSERT INTO triples (shareA, shareB, shareC) VALUES(?,?,?)";
+
   int rc;
-  sql << "INSERT INTO triples (shareA, shareB, shareC)";
-  sql << "VALUES ('" << share_a.str() << "', '" << share_b.str() << "', '" << share_c.str() << "' );";
-  rc = sqlite3_exec(db, sql.str().c_str(), callback, 0, &zErrMsg);
-  if( rc != SQLITE_OK ){
-      fprintf(stderr, "SQL error while insert: %s\n", zErrMsg);
-      sqlite3_free(zErrMsg);
+  rc = sqlite3_prepare_v2(db, sql, -1, &pStmt, 0);
+  if (rc != SQLITE_OK) {
+      cout << "Cannot prepare statement: " << sqlite3_errmsg(db) << endl;
+      return ;
     }
+  const string& tmpA = share_a.str();
+  const char* cstrA = tmpA.c_str();
+  const string& tmpB = share_b.str();
+  const char* cstrB = tmpB.c_str();
+  const string& tmpC = share_c.str();
+  const char* cstrC = tmpC.c_str();
+  rc = sqlite3_bind_text(pStmt, 1, cstrA, tmpA.size(), SQLITE_STATIC);
+  if (rc != SQLITE_OK) {
+      cout << "Bind failed: " << sqlite3_errmsg(db) << endl;
+    }
+  sqlite3_bind_text(pStmt, 2, cstrB, tmpB.size(), SQLITE_STATIC);
+  sqlite3_bind_text(pStmt, 3, cstrC, tmpC.size(), SQLITE_STATIC);
+  rc = sqlite3_step(pStmt);
+  if (rc != SQLITE_DONE) {
+      cout << "Execution failed: " << sqlite3_errmsg(db) << endl;
+    }
+
+  if (sqlCounter == 10000) {
+      sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
+      sqlite3_finalize(pStmt);
+      sqlCounter = 0;
+      sqlite3_reset(pStmt);
+    }
+
 
   tripleCounter = 0;
   stringstream().swap(share_a);
