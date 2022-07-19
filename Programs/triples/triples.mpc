@@ -1,7 +1,8 @@
 ch3000=regint(3000)
-@for_range(100000)
+@for_range(6*10000)
 def f(i):
     a,b,c = sint.get_random_triple()
+
     #print_ln("this should be equal %s, %s", (a*b).reveal(), c.reveal())
     #print_ln("this is value a; %s", a.reveal())
     #print_whoami()
@@ -9,3 +10,4 @@ def f(i):
     output_shares(ch3000, *b)
     output_shares(ch3000, *c)
 close_channel(ch3000)
+

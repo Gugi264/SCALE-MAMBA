@@ -12,8 +12,8 @@ All rights reserved
 /* The minimum batch size for offline production per call 
  * to base routine. 
  */
-#define sz_offline_batch 60000
-#define sz_IO_batch 10000 
+#define sz_offline_batch 60000 // was 60000
+#define sz_IO_batch 10000 // was 10000
 
 /* The max number of triples etc in the sacrifice production queue 
  * where we stop producing stuff.
@@ -21,9 +21,9 @@ All rights reserved
  * good data away
  * No need to produce too many squares
  */
-#define max_triples_sacrifice 5000000
-#define max_squares_sacrifice 100000
-#define max_bits_sacrifice 5000000
+#define max_triples_sacrifice 5000000 //was 5000000
+#define max_squares_sacrifice 100000 //was 100000
+#define max_bits_sacrifice 5000000 // was 5000000
 // Following is per player 
 #define max_IO_sacrifice 100000
 
@@ -125,13 +125,13 @@ All rights reserved
 #define HwtSK 64
 
 /* Approx max size of each aBit and aAND queues in the OT thread */
-#define max_aBit_queue 500000
-#define max_aAND_queue 200000
+#define max_aBit_queue 500000 // was 500000
+#define max_aAND_queue 200000 // was 200000
 
 /* Ditto for the Mod2 Thread (which sometimes replaces the OT thread
  * depending on the access structure)
  */
-#define max_Mod2_Triple_queue 500000
+#define max_Mod2_Triple_queue 500000 // was 500000
 
 /* This says use the SimpleROT from ePrint 2015/267 instead of the DMC 
  * version (the latter introduces a problem in our usage)
@@ -166,7 +166,7 @@ All rights reserved
  * a circuit using Search_SubCircuit. Only used to simplify the modp
  * circuit
  */
-#define iter_modp_Search_SubCircuit 5 // was 60
+#define iter_modp_Search_SubCircuit 60 // was 60
 
 /* Default sleep setting, for when we put threads to sleep 
  * This is a quarter of a second
