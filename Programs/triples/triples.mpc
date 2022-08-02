@@ -1,5 +1,5 @@
 ch3000=regint(3000)
-@for_range(6*10000)
+@for_range(5*2*4*10000)
 def f(i):
     a,b,c = sint.get_random_triple()
 
