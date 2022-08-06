@@ -369,7 +369,7 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
     {
       char *zErrMsg= 0;
       int rc;
-      string fileName= "mydb" + to_string(S.get_player()) + ".db";
+      string fileName= "mydb" + to_string(S.get_player()+1) + ".db";
       rc= sqlite3_open(fileName.c_str(), &db);
 
       if (rc)
