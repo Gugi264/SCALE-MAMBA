@@ -365,12 +365,15 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
   //  (*outf) << "Output channel " << channel << " : ";
   //  S.output(*outf, human);
 
+
   if (db == NULL)
     {
       char *zErrMsg= 0;
       int rc;
       string fileName= "mydb" + to_string(S.get_player()+1) + ".db";
+      (*outf) << " before open" << endl;
       rc= sqlite3_open(fileName.c_str(), &db);
+      (*outf) << " after open" << endl;
 
       if (rc)
         {
@@ -381,7 +384,9 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
         {
           fprintf(stderr, "Opened succesfully\n");
         }
+
       stringstream sqlCreate;
+      sqlCreate << "PRAGMA journal_mode=WAL;";
       sqlCreate << "CREATE TABLE if not exists triples (";
       sqlCreate << "id INTEGER PRIMARY KEY AUTOINCREMENT,";
       sqlCreate << "shareA TEXT,";
@@ -397,7 +402,7 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
       sqlCreate << "shareB_C TEXT,";
       sqlCreate << "shareC_C TEXT";
       sqlCreate << ");";
-
+      (*outf) << " before first exec" << endl;
       rc= sqlite3_exec(db, sqlCreate.str().c_str(), callback, 0, &zErrMsg);
       if (rc != SQLITE_OK)
         {
@@ -409,6 +414,7 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
           fprintf(stdout, "Table triples created successfully\n");
         }
 
+        (*outf) << " after first exec" << endl;
       sqlCreate.clear();
       sqlCreate << "CREATE TABLE if not exists randVal (";
       sqlCreate << "id INTEGER PRIMARY KEY AUTOINCREMENT,";
