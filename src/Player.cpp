@@ -192,6 +192,13 @@ int main(int argc, const char *argv[])
           "-f",           // Flag token.
           "-fhefactories" // Flag token.
   );
+  opt.add("0", // Default
+          0,   // Required?
+          0,   // Number of args expteced
+          0,   // Delimter
+          "Use TaaS, default: off\n",
+          "-t", // Token
+          "-taas");
 
   opt.parse(argc, argv);
 
@@ -200,7 +207,8 @@ int main(int argc, const char *argv[])
   string progname;
   string memtype;
   unsigned int portnumbase;
-  bool OT_disable= false;
+  bool OT_disable= true;
+  bool use_taas= false;
 
   vector<string *> allArgs(opt.firstArgs);
   allArgs.insert(allArgs.end(), opt.lastArgs.begin(), opt.lastArgs.end());
@@ -257,6 +265,15 @@ int main(int argc, const char *argv[])
   if (opt.isSet("-dOT"))
     {
       OT_disable= true;
+    }
+
+  if (opt.isSet("-t"))
+    {
+      use_taas = true;
+      cout << "using taas" << endl;
+    }
+  else {
+      cout << "not using taas" << endl;
     }
 
   int maxI;
@@ -396,7 +413,6 @@ void main_logic(
       ShD.Otype= Fake;
     }
   Share::init_share_data(ShD);
-
   ShareData2 ShD2;
   if (ShD.Etype != HSS)
     {
@@ -414,8 +430,8 @@ void main_logic(
       Share2::init_share_data(ShD2);
       aBitVector2::set_player(my_number);
       cout << "\nUsing Mod2Engine system for the binary circuit processing" << endl;
-      cout << "  - This uses Replicated sharing mod 2\n"
-           << endl;
+      cout << "  - This uses Replicated sharing mod 2\n" << endl;
+
     }
   else
     {
@@ -445,6 +461,7 @@ void main_logic(
       inp >> MacK[i];
     }
   inp.close();
+  cout << "Nr of macK: " << Share::SD.nmacs << endl;
 
   /*************************************
    * Now initialize the FHE data       *
@@ -455,6 +472,7 @@ void main_logic(
   Ring Rg;
   if (Share::SD.type == Full)
     {
+      cout << "here" << endl;
       stringstream ss;
       ss << "Data/FHE-Key-" << my_number << ".key";
       inp.open(ss.str().c_str());
@@ -477,6 +495,10 @@ void main_logic(
     }
   else
     { // Make dummy params to avoid having pk/sk as pointers
+      cout << "not there" << endl;
+      if (Share::SD.type == Shamir) {
+          cout << "Share type is shamir" << endl;
+        }
       Rg.initialize(8);
       params.set(Rg, 17, 17, 1, false);
     }
@@ -492,8 +514,7 @@ void main_logic(
       do
         {
           inp.get(ch);
-        }
-      while (ch != ':');
+      } while (ch != ':');
       inp >> pk >> sk;
       inp.close();
     }
@@ -521,7 +542,7 @@ void main_logic(
     {
       //  Here we are just using the simple IO class
       auto ios= std::make_unique<Input_Output_Simple>();
-      //auto ios= std::make_unique<Input_Output_Test>();
+      // auto ios= std::make_unique<Input_Output_Test>();
 
       ios->init(cin, cout, true);
       io= std::move(ios);
@@ -531,6 +552,7 @@ void main_logic(
    *  - Which one we use depends on whether we are using
    *    HSS or not
    */
+  cout << "Running Scale" << endl;
   if (Share::SD.Etype == HSS)
     {
       Machine<aBitVector, aBit> machine;
@@ -559,6 +581,7 @@ void main_logic(
     }
   else
     {
+      cout << "not HSS" << endl;
       Machine<aBitVector2, Share2> machine;
       if (verbose < 0)
         {

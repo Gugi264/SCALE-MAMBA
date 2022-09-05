@@ -7,3 +7,4 @@ do
 done
 
 time ./Player.x 0 -t -v 0 Programs/mult_demo | tee out0.txt 2>&1 
+

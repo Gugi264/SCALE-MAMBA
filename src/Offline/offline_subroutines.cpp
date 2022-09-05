@@ -58,8 +58,7 @@ gfp schur_sum_prod(const Share &aa, const Share &bb, const Player &P)
       for (unsigned int i= 0; i < Share::SD.M.shares_per_player(P.whoami());
            i++)
         {
-          for (unsigned int j= 0; j < Share::SD.M.shares_per_player(P.whoami());
-               j++)
+          for (unsigned int j= 0; j < Share::SD.M.shares_per_player(P.whoami()); j++)
             {
               if (Share::SD.Schur.is_non_zero(P.whoami(), i, j))
                 {

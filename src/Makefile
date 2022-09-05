@@ -3,9 +3,9 @@ include ../CONFIG.mine
 CC = g++
 
 ARCH = -mtune=native -maes -mpclmul -msse4.1 -mavx -mbmi2 -madx -march=core2
-CFLAGS = -Wall -std=c++14 -pedantic -Wextra -pthread -I$(ROOT)/src $(ARCH) $(FLAGS) $(OPT) -I$(OSSL)/include
+CFLAGS = -Wall -std=c++14 -pedantic -Wextra -pthread -I$(ROOT)/src $(ARCH) $(FLAGS) $(OPT) -I$(OSSL)/include -I/home/sguggi/progs/mpir/include -I/home/sguggi/progs/cryptopp/include -g -O0
 CPPFLAGS = $(CFLAGS)
-LDLIBS = -L/$(OSSL)/lib -lm -lssl -lcrypto -lmpirxx -lmpir -lcryptopp $(LDFLAGS) -L/usr/local/lib -lsqlite3
+LDLIBS = -L/$(OSSL)/lib -L/home/sguggi/progs/mpir/lib -I/home/sguggi/progs/mpir/lib -lm -lssl -lcrypto -lmpirxx -lmpir -lcryptopp $(LDFLAGS) -lsioclient -lsqlite3 -lcurl -lprotobuf
 
 all: $(LIB) Setup.x Player.x
 

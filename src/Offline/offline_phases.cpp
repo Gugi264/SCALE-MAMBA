@@ -10,6 +10,7 @@ All rights reserved
 #include "offline_IO_production.h"
 #include "offline_data.h"
 #include "sacrifice.h"
+#include "TaasProvider.h"
 
 #include "LSSS/PRSS.h"
 #include "LSSS/PRZS.h"
@@ -108,6 +109,20 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
                 FHE_Industry &industry,
                 int verbose)
 {
+  //TAAS stuff
+  cout << "before taas stuff " << endl;
+  vector<string> taasServiceProviders;
+  taasServiceProviders.push_back("http://127.0.0.1:7001");
+  taasServiceProviders.push_back("http://127.0.0.1:7002");
+  taasServiceProviders.push_back("http://127.0.0.1:7003");
+  taasServiceProviders.push_back("http://127.0.0.1:7004");
+  taasServiceProviders.push_back("http://127.0.0.1:7005");
+  taasServiceProviders.push_back("http://127.0.0.1:7006");
+  string ledgerAddress = "ws://127.0.0.1:6000";
+  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
+  taasProvider.getTriples(5);
+  cout << "after taas stuff " << endl;
+
   // Initialize PRSS stuff
   PRSS prss(P);
   PRZS przs(P);
