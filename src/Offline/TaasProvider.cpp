@@ -93,18 +93,14 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string>& encryp
         cout << "in set open listener" << endl;
     });
     h.socket()->on("reserve_response", [&](sio::event& ev) {
-        cout << "before mutex in resever_response" << endl;
-        mu.lock();
-        cout << "in reserver_response" << endl;
+        cout << "in resever_response" << endl;
+        lock_guard<mutex> lk(mu);
         retVal = ev.get_message()->get_bool();
         finished = true;
-        HIGHLIGHT("before notify all");
         cond.notify_all();
-        HIGHLIGHT("after notifiy all");
-        mu.unlock();
     });
     h.set_fail_listener([&]() {
-        cout << "sio failed" << endl;
+        HIGHLIGHT("sio failed");
     });
     h.connect(ledgerAddress_);
     nlohmann::json j;
@@ -128,21 +124,16 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string>& encryp
 
     h.socket()->emit("reserve", to_string(j));
 
-    OUT("before wait");
-    mu.lock();
-    if (!finished) {
-        cond.wait(mu);
-    }
-    mu.unlock();
-
-    cout << "after ledger request" << endl;
+    unique_lock<mutex> lk(mu);
+    cond.wait(mu, [&finished] {return finished;});
+    lk.unlock();
     if (!retVal) {
-        cout << "Error from ledger" << endl;
+        HIGHLIGHT("Error from ledger");
         exit(-1);
     }
-    cout << "before hc lose" << endl;
-    h.close();
-    cout << "after hc lose" << endl;
+    h.sync_close();
+    mu.lock();
+    mu.unlock();
 }
 
 void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choice) {
