@@ -1,0 +1,7 @@
+a = MemValue(sint(1))
+def loop_body(i):
+	a.write(a*i)
+
+range_loop(loop_body, 1, 5)
+print_ln(' a=%s', reveal(a))
+
