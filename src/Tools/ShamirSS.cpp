@@ -46,6 +46,43 @@ map<int, bigint> ShamirSS::split(int n, int k, bigint secret, vector<int> pointT
         shares[x] = share;
     }
     return shares;
+}
+
+bigint ShamirSS::recoverSecret(map<int, bigint> parts) {
+    int zero = 0;
+    int one = 1;
+    bigint recovered;
+    bigintFromBytes(recovered, static_cast<uint8_t *>(static_cast<void *>(&zero)), sizeof(uint8_t));
+    vector<int> x_s;
+    for (const auto &elem: parts) {
+        x_s.push_back(elem.first);
+    }
+    for (int j = 0; j < x_s.size(); ++j) {
+        bigint tmp;
+        bigintFromBytes(tmp, static_cast<uint8_t *>(static_cast<void *>(&one)), sizeof(uint8_t));
+        for (int m = 0; m < x_s.size(); ++m) {
+            if (j == m) continue;
+            bigint divided = divmod(x_s[m], x_s[m] - x_s[j]);
+            tmp = tmp*divided;
+            tmp = mod(tmp, prime_);
+        }
+        auto y = parts[x_s[j]];
+        bigint multiplied = tmp*y;
+        multiplied = mod(multiplied, prime_);
+        recovered = recovered+multiplied;
+        recovered = mod(recovered, prime_);
+    }
+    return recovered;
+}
+
+bigint ShamirSS::divmod(int num, int den) {
+    bigint numBigInt;
+    bigint denBigInt;
+    numBigInt = num;
+    denBigInt = den;
+    bigint result;
+    invMod(result,denBigInt,prime_);
+    return numBigInt*result;
 
 }
 

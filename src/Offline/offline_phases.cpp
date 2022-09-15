@@ -119,9 +119,8 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   taasServiceProviders.push_back("http://127.0.0.1:7005");
   taasServiceProviders.push_back("http://127.0.0.1:7006");
   string ledgerAddress = "ws://127.0.0.1:6000";
-  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
-  taasProvider.getTriples(5);
-  cout << "after taas stuff " << endl;
+ // TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
+
 
   // Initialize PRSS stuff
   PRSS prss(P);
@@ -157,6 +156,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
             }
 
           offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
+          //taasProvider.getTriples(5000, a, b, c);
           P.OP->RunOpenCheck(P, "", 0);
           if (verbose > 1)
             {

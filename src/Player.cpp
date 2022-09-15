@@ -207,7 +207,7 @@ int main(int argc, const char *argv[])
   string progname;
   string memtype;
   unsigned int portnumbase;
-  bool OT_disable= true;
+  bool OT_disable= false;
   bool use_taas= false;
 
   vector<string *> allArgs(opt.firstArgs);

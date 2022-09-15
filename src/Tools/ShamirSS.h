@@ -14,9 +14,11 @@ class ShamirSS
 public:
   ShamirSS(bigint prime, PRNG PRNG);
   map<int, bigint> split(int n, int k, bigint secret, vector<int> pointToEvaluate);
+  bigint recoverSecret(map<int, bigint> parts);
 
 private:
     bool check_bigint_zero(bigint toCheck);
+    bigint divmod(int num, int den);
 };
 
 #endif // SCALE_MAMBA_SHAMIRSS_H

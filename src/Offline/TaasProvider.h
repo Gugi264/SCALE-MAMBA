@@ -18,16 +18,17 @@
 #include <cstddef>
 #include <cstring>
 #include "openssl/pem.h"
-#include "Tools/base64.h"
 #include "LSSS/MSP.h"
 #include <fstream>
 #include <cstddef>
 #include <utility>
 #include <mutex>
 #include <condition_variable>
+#include <list>
 #include "Tools/json.h"
 #include "ptp_and_brdcst_msg.pb.h"
 #include "randVal_msg.pb.h"
+#include "LSSS/Share.h"
 
 using namespace std;
 class TaasProvider
@@ -44,7 +45,7 @@ class TaasProvider
 
 public:
   TaasProvider(Player &P, vector<string> availableTripleProviders, string ledgerAddress, bigint prime);
-  void getTriples(int nrOfTriples);
+  void getTriples(int nrOfTriples, list<Share> &a, list<Share> &b, list<Share> &c);
 
 private:
 
@@ -58,7 +59,11 @@ private:
   static size_t write_cb(char *data, size_t n, size_t l, void *userp);
   static size_t write_cert(char *data, size_t n, size_t l, void *userp);
   void sendRequestToLedger(int count, const map<int, string> &encryptedShareParts, const string& uuid, RequestChoice choice);
-  void communicateWithSP(int count, string uuid, RequestChoice choice);
+  void communicateWithSP(int count, string uuid, RequestChoice choice, list<Share> &a, list<Share> &b, list<Share> &c);
+  static char *base64(const unsigned char *input, int length);
+  void checkAllOpeningsAndCreateTriples(map<int, TransformedShareMsg> &transformedShareMsgMap,
+                                          map<int, BroadcastTransformShareMsg> &broadcastTransformShareMsgMap,
+                                          int nrOfTriples, list<Share> &a, list<Share> &b, list<Share> &c);
 };
 
 #endif // SCALE_MAMBA_TAASPROVIDER_H
