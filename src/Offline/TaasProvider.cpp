@@ -12,11 +12,12 @@
 TaasProvider::TaasProvider(Player &P, vector<string> availableTripleProviders, string ledgerAddress, bigint prime)
         : P_(P), ledgerAddress_(std::move(ledgerAddress)), PRG_(P.G), prime_(std::move(prime)),
           shamirSs_(prime_, PRG_) {
+
     PRG_.ReSeed(0);
-    createMacShare();
+    //createMacShare();
+    macShare_ = P.get_mac_key(0);
     cout << "prime in taas: " << prime_ << endl;
     chooseTripleProviders(std::move(availableTripleProviders));
-
 }
 
 map<int, bigint> TaasProvider::splitMacShare() {
@@ -66,20 +67,20 @@ void TaasProvider::chooseTripleProviders(vector<string> availableTripleProviders
 
 void TaasProvider::getTriples(int nrOfTriples, list<Share> &a, list<Share> &b, list<Share> &c) {
     auto uuid = createUUID();
-    cout << "before splitMachsare" << endl;
+    //cout << "before splitMachsare" << endl;
     auto partMap = splitMacShare();
-    cout << "after splitMachsare" << endl;
+    //cout << "after splitMachsare" << endl;
     map<int, string> encryptedMacShareParts;
     for (const auto &elem: partMap) {
-        cout << "in part map" << endl;
-        cout << "first: " << elem.first << endl;
+        //cout << "in part map" << endl;
+        //cout << "first: " << elem.first << endl;
         auto encryptedPart = downloadCertificateEncryptAndEncode(providersMap_[elem.first], partMap[elem.first]);
         encryptedMacShareParts[elem.first] = encryptedPart;
     }
     sendRequestToLedger(nrOfTriples, encryptedMacShareParts, uuid, TRIPLES);
-    cout << "get triples finished " << endl;
+   // cout << "get triples finished " << endl;
     communicateWithSP(nrOfTriples, uuid, TRIPLES, a, b, c);
-    OUT("finished communication with SP");
+    OUT("finished getTriples");
 
 }
 
@@ -91,10 +92,10 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string> &encryp
     condition_variable_any cond;
     mutex mu;
     h.set_open_listener([&]() {
-        cout << "in set open listener" << endl;
+        //cout << "in set open listener" << endl;
     });
     h.socket()->on("reserve_response", [&](sio::event &ev) {
-        cout << "in resever_response" << endl;
+        //cout << "in resever_response" << endl;
         lock_guard<mutex> lk(mu);
         retVal = ev.get_message()->get_bool();
         finished = true;
@@ -135,6 +136,10 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string> &encryp
     h.sync_close();
 }
 
+void TaasProvider::closeListen(sio::client::close_reason const& reason) {
+    //HIGHLIGHT("one connection closed");
+}
+
 void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choice, list<Share> &a, list<Share> &b, list<Share> &c) {
     map<int, sio::client> socketMap;
     map<int, bool> socketConnectedMap;
@@ -152,12 +157,12 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
     }
 
     for (const auto &elem: providersMap_) {
-        cout << "in first loop for " << elem.second << endl << flush;
+        //cout << "in first loop for " << elem.second << endl << flush;
         auto h = &socketMap[elem.first];
         h->socket()->on("transformshare_point_to_point_rnd", [&](sio::event &ev) {
-            cout << "In transformPointToPoint rnd" << endl;
+            //cout << "In transformPointToPoint rnd" << endl;
             string msg = *ev.get_message()->get_binary();
-            OUT(msg);
+            //OUT(msg);
             TransformedShareMsgRndVal transformedShareMsg;
             bool error = transformedShareMsg.ParseFromString(msg);
             if (!error) {
@@ -171,7 +176,7 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
         });
 
         h->socket()->on("transformshare_point_to_point_triple", [&](sio::event &ev) {
-            cout << "In transformPointToPoint Triple" << endl << flush;
+            //cout << "In transformPointToPoint Triple" << endl << flush;
             string msg = *ev.get_message()->get_binary();
             TransformedShareMsg transformedShareMsg;
             bool error = transformedShareMsg.ParseFromString(msg);
@@ -183,7 +188,7 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
             lock_guard<mutex> lk(mutexes[elem.first]);
             socketConnectedMap[elem.first] = true;
             conditionsMap[elem.first].notify_all();
-            OUT("finished with trfs ptp triple");
+            //OUT("finished with trfs ptp triple");
         });
 
         h->socket()->on("transformshare_broadcast_triple", [&](sio::event &ev) {
@@ -202,7 +207,7 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
         });
 
         h->socket()->on("transformshare_broadcast_rnd", [&](sio::event &ev) {
-            cout << "In transform share broadcast rnd" << endl << flush;
+            //cout << "In transform share broadcast rnd" << endl << flush;
             string msg = *ev.get_message()->get_binary();
             BroadcastTransformShareRndValMsg broadcastTransformShareMsg;
             bool error = broadcastTransformShareMsg.ParseFromString(msg);
@@ -217,21 +222,23 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
         });
 
         h->set_open_listener([&]() {
-            HIGHLIGHT("in set_open");
-            cout << "elem.first" << elem.first << endl;
-            cout << "Connected to: " << elem.first << endl;
+            //HIGHLIGHT("in set_open");
+            //cout << "elem.first" << elem.first << endl;
+            //cout << "Connected to: " << elem.first << endl;
             lock_guard<mutex> lk(mutexes[elem.first]);
             socketConnectedMap[elem.first] = true;
             conditionsMap[elem.first].notify_all();
-            OUT("finished with open listener");
+            //OUT("finished with open listener");
         });
 
         h->set_fail_listener([&]() {
             HIGHLIGHT("sio failed");
         });
 
+        h->set_close_listener(std::bind(&TaasProvider::closeListen, this,std::placeholders::_1));
+
         h->connect(elem.second);
-        cout << "after connect " << elem.second << endl;
+        //cout << "after connect " << elem.second << endl;
     }
 
     nlohmann::json jo;
@@ -252,7 +259,7 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
 
     //waiting for point-to-point from transformshare
     for (const auto &elem: providersMap_) {
-        cout << "waiting for ptp: " << elem.first << endl;
+        //cout << "waiting for ptp: " << elem.first << endl;
         {
             unique_lock<mutex> lk(mutexes[elem.first]);
             while (!socketConnectedMap[elem.first]) {
@@ -260,7 +267,7 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
             }
         }
     }
-    OUT("finished waiting ptp");
+    //OUT("finished waiting ptp");
 
     // wait for broadcast from transformShare
     for (const auto &elem: providersMap_) {
@@ -270,10 +277,13 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
                 conditionsMap[elem.first].wait(lk);
             }
         }
-        socketMap[elem.first].sync_close(); //TODO: make parallel
+        // OUT("before sync_close");
+        //socketMap[elem.first].close(); //TODO: make parallel
+        //socketMap[elem.first].clear_con_listeners();
+        //OUT("after sync_close");
     }
 
-    OUT("end of communicatewithSP");
+    //OUT("end of communicatewithSP");
     checkAllOpeningsAndCreateTriples(transformedShareMsgMap, broadcastTransformShareMsgMap, count, a, b, c);
 }
 
@@ -302,7 +312,6 @@ void TaasProvider::checkAllOpeningsAndCreateTriples(map<int, TransformedShareMsg
             auto transformedShare = transformedShareMsgMap[key].transformedshare(i);
             auto broadcastShare = broadcastTransformShareMsgMap[key].broadcast(i);
             aParts[key] = transformedShare.share_a();
-            cout << key << ": " << aParts[key] << endl;
             bParts[key] = transformedShare.share_b();
             cParts[key] = transformedShare.share_c();
             c_aParts[key] = transformedShare.associated_c_a();
@@ -398,17 +407,18 @@ void TaasProvider::checkAllOpeningsAndCreateTriples(map<int, TransformedShareMsg
         mac[0] = macC;
         C.assign(P_.whoami(), s, mac);
 
+
         a.push_back(A);
         b.push_back(B);
         c.push_back(C);
     }
 
-    HIGHLIGHT("finished converting");
+    //HIGHLIGHT("finished converting");
 
 }
 
 string TaasProvider::downloadCertificateEncryptAndEncode(string provider, const bigint &macShare) {
-    cout << "in cert function" << endl;
+    //cout << "in cert function" << endl;
     const string certRelativPath = "/crt/ServerCert.crt";
     CURL *curl;
     CURLcode res;
@@ -458,7 +468,7 @@ string TaasProvider::downloadCertificateEncryptAndEncode(string provider, const 
 
         EVP_PKEY_CTX *ctx;
         string toEncrypt = macShare.get_str();
-        OUT(macShare);
+        //OUT(macShare);
         unsigned char *in = (unsigned char *) toEncrypt.c_str();
         unsigned char *out;
         size_t outlen, inlen;
@@ -573,5 +583,7 @@ char* TaasProvider::base64(const unsigned char *input, int length) {
     if (pl != ol) { std::cerr << "Whoops, encode predicted " << pl << " but we got " << ol << "\n"; }
     return output;
 }
+
+
 
 

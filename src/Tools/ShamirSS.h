@@ -13,7 +13,7 @@ class ShamirSS
   bigint bigint0_;
 public:
   ShamirSS(bigint prime, PRNG PRNG);
-  map<int, bigint> split(int n, int k, bigint secret, vector<int> pointToEvaluate);
+  map<int, bigint> split(int n, int k, bigint secret, vector<int> &pointToEvaluate);
   bigint recoverSecret(map<int, bigint> parts);
 
 private:

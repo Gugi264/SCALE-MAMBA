@@ -58,7 +58,7 @@ All rights reserved
  * threshold case. This is the one which affects offline 
  * runtime the most
  */
-#define ZK_sound_sec 128
+#define ZK_sound_sec 1 // was 128
 
 /* The ZKPoK ZK_sec. This gives the statistical
  * distance between the ZK simulation and the real
@@ -166,7 +166,7 @@ All rights reserved
  * a circuit using Search_SubCircuit. Only used to simplify the modp
  * circuit
  */
-#define iter_modp_Search_SubCircuit 60
+#define iter_modp_Search_SubCircuit 3 // was 60
 
 /* Default sleep setting, for when we put threads to sleep 
  * This is a quarter of a second

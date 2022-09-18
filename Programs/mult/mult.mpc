@@ -1,4 +1,4 @@
-a = MemValue(sint(1))
+a = MemValue(sint.get_random_int(5))
 def loop_body(i):
 	a.write(a*i)
 

@@ -57,6 +57,11 @@ int check_exit(int num_online, const Player &P, offline_control_data &OCD, ODtyp
             {
               case Triples:
                 //OCD.mul_mutex[num_online].lock();
+//                cout << "in case triples" << endl;
+//                cout << "sacd: " << SacrificeD[num_online].TD.ta.size() << endl;
+//                cout << "ocd.mx: " << OCD.mx_triples_sacrifice << endl;
+//                cout << "ocd.totm: " << OCD.totm[num_online] << endl;
+//                cout << "ocd.maxm: " << OCD.maxm << endl;
                 if ((SacrificeD[num_online].TD.ta.size() > OCD.mx_triples_sacrifice) || (OCD.totm[num_online] > OCD.maxm && OCD.maxm != 0))
                   {
                     result= 2;
@@ -100,6 +105,7 @@ int check_exit(int num_online, const Player &P, offline_control_data &OCD, ODtyp
           result= 2;
         }
     }
+  //cout << "result of check exit: " << result << endl;
   return result;
 }
 
@@ -119,7 +125,9 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   taasServiceProviders.push_back("http://127.0.0.1:7005");
   taasServiceProviders.push_back("http://127.0.0.1:7006");
   string ledgerAddress = "ws://127.0.0.1:6000";
- // TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
+//    TaasProvider taasProvider();
+  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
+
 
 
   // Initialize PRSS stuff
@@ -127,11 +135,13 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   PRZS przs(P);
   FakePrep prep(P);
 
+
   list<Share> a, b, c;
   list<Share>::iterator it;
   int flag;
   while (0 == 0)
     {
+      //cout << "In while for mult_phas" << endl;
       flag= check_exit(num_online, P, OCD, Triples);
       /* Needs to die gracefully if online is gone */
       if (flag == 1)
@@ -155,10 +165,13 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
               fflush(stdout);
             }
 
-          offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
-          //taasProvider.getTriples(5000, a, b, c);
+//            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
+          OCD.mul_mutex[num_online].lock();
+          taasProvider.getTriples(2100, a, b, c);
+          OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);
-          if (verbose > 1)
+           // cout <<  "macSize: " << a.front().get_macs().size() << endl;
+            if (verbose > 1)
             {
               printf("Out of triples: thread = %d\n", num_online);
               fflush(stdout);

@@ -10,7 +10,8 @@ ShamirSS::ShamirSS(bigint prime, PRNG PRNG) : prime_(prime), PRNG_(PRNG) {
     bigintFromBytes(bigint0_, static_cast<uint8_t *>(static_cast<void *>(&zero)), sizeof(uint8_t));
 }
 
-map<int, bigint> ShamirSS::split(int n, int k, bigint secret, vector<int> pointToEvaluate) {
+
+map<int, bigint> ShamirSS::split(int n, int k, bigint secret, vector<int> &pointToEvaluate) {
 
     for (auto x: pointToEvaluate) {
         bigint tmp;

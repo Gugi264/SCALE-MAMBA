@@ -207,7 +207,7 @@ int main(int argc, const char *argv[])
   string progname;
   string memtype;
   unsigned int portnumbase;
-  bool OT_disable= false;
+  bool OT_disable= true;
   bool use_taas= false;
 
   vector<string *> allArgs(opt.firstArgs);
@@ -472,7 +472,7 @@ void main_logic(
   Ring Rg;
   if (Share::SD.type == Full)
     {
-      cout << "here" << endl;
+      cout << "in Share Type full" << endl;
       stringstream ss;
       ss << "Data/FHE-Key-" << my_number << ".key";
       inp.open(ss.str().c_str());
@@ -495,7 +495,7 @@ void main_logic(
     }
   else
     { // Make dummy params to avoid having pk/sk as pointers
-      cout << "not there" << endl;
+      cout << "not in full share type" << endl;
       if (Share::SD.type == Shamir) {
           cout << "Share type is shamir" << endl;
         }

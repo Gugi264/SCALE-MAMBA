@@ -33,7 +33,7 @@
 using namespace std;
 class TaasProvider
 {
-  const Player P_;
+  Player &P_;
   gfp macShare_;
   string ledgerAddress_;
   PRNG PRG_;
@@ -64,6 +64,8 @@ private:
   void checkAllOpeningsAndCreateTriples(map<int, TransformedShareMsg> &transformedShareMsgMap,
                                           map<int, BroadcastTransformShareMsg> &broadcastTransformShareMsgMap,
                                           int nrOfTriples, list<Share> &a, list<Share> &b, list<Share> &c);
+  void closeListen(const sio::client::close_reason &reason);
+
 };
 
 #endif // SCALE_MAMBA_TAASPROVIDER_H
