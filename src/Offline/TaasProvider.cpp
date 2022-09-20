@@ -13,7 +13,7 @@ TaasProvider::TaasProvider(Player &P, vector<string> availableTripleProviders, s
         : P_(P), ledgerAddress_(std::move(ledgerAddress)), PRG_(P.G), prime_(std::move(prime)),
           shamirSs_(prime_, PRG_) {
 
-    PRG_.ReSeed(0);
+    PRG_.ReSeed(10000 + P.whoami());
     //createMacShare();
     macShare_ = P.get_mac_key(0);
     cout << "prime in taas: " << prime_ << endl;
