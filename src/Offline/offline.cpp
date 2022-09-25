@@ -98,8 +98,8 @@ void offline_phase_bits(Player &P, PRSS &prss, PRZS &przs, FakePrep &prep,
     }
   else
     {
-      //offline_FHE_bits(P, bits, pk, sk, PTD, industry);
-      //offline_FHE_squares(P, a, b, pk, sk, PTD, industry, rep);
+      offline_FHE_bits(P, bits, pk, sk, PTD, industry);
+      offline_FHE_squares(P, a, b, pk, sk, PTD, industry, rep);
     }
 
   sacrifice_phase_bits(P, fake_sacrifice, bits, a, b);
