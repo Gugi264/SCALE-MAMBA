@@ -117,16 +117,16 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
 {
   //TAAS stuff
   cout << "before taas stuff " << endl;
-  vector<string> taasServiceProviders;
-  taasServiceProviders.push_back("http://127.0.0.1:7001");
-  taasServiceProviders.push_back("http://127.0.0.1:7002");
-  taasServiceProviders.push_back("http://127.0.0.1:7003");
-  taasServiceProviders.push_back("http://127.0.0.1:7004");
-  taasServiceProviders.push_back("http://127.0.0.1:7005");
-  taasServiceProviders.push_back("http://127.0.0.1:7006");
-  string ledgerAddress = "ws://127.0.0.1:6000";
-//    TaasProvider taasProvider();
-  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
+//  vector<string> taasServiceProviders;
+//  taasServiceProviders.push_back("http://127.0.0.1:7001");
+//  taasServiceProviders.push_back("http://127.0.0.1:7002");
+//  taasServiceProviders.push_back("http://127.0.0.1:7003");
+//  taasServiceProviders.push_back("http://127.0.0.1:7004");
+//  taasServiceProviders.push_back("http://127.0.0.1:7005");
+//  taasServiceProviders.push_back("http://127.0.0.1:7006");
+//  string ledgerAddress = "ws://127.0.0.1:6000";
+////    TaasProvider taasProvider();
+//  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
 
 
 
@@ -165,9 +165,9 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
               fflush(stdout);
             }
 
-//            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
+          offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
           OCD.mul_mutex[num_online].lock();
-          taasProvider.getTriples(1200, a, b, c);
+          //taasProvider.getTriples(1200, a, b, c);
           OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);
            // cout <<  "macSize: " << a.front().get_macs().size() << endl;
