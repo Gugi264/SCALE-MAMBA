@@ -522,5 +522,6 @@ void Player::print_offline()
          "  }\n"
          "}\n" BENCH_MAGIC_END BENCH_ATTR_RESET,
          me, thread_number, triples, squares, bits, dabits, inputs, abits, aands, mod2s);
+  std::cout << std::flush;
 }
 #endif

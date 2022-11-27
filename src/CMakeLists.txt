@@ -5,7 +5,6 @@ if (${CMAKE_VERSION} VERSION_LESS 3.12)
 endif ()
 
 project(SCALE_MAMBA VERSION 1.0 DESCRIPTION "SCALE MAMBA" LANGUAGES CXX)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
 set(CMAKE_CXX_STANDARD 11)
 
@@ -98,6 +97,7 @@ add_library(offline OBJECT
         Offline/offline_subroutines.cpp
         Offline/sacrifice.cpp
         Offline/XOR_Machine.cpp
+        Offline/TaasProvider.cpp
         )
 
 add_library(online OBJECT
@@ -152,6 +152,7 @@ add_library(tools OBJECT
         Tools/random.cpp
         Tools/Timer.cpp
         Tools/util_containers.cpp
+        Tools/ShamirSS.cpp
         )
 
 add_library(local OBJECT

@@ -19,4 +19,3 @@ unset ARGS[${#ARGS[@]}-1]
 
 ./compile-new.sh "${ARGS[@]}" $target || exit 1
 #./compile-old.sh $target || exit 1
-

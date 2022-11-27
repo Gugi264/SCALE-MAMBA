@@ -13,7 +13,7 @@ All rights reserved
  * to base routine. 
  */
 #define sz_offline_batch 60000
-#define sz_IO_batch 10000 
+#define sz_IO_batch 10000
 
 /* The max number of triples etc in the sacrifice production queue 
  * where we stop producing stuff.
@@ -58,7 +58,7 @@ All rights reserved
  * threshold case. This is the one which affects offline 
  * runtime the most
  */
-#define ZK_sound_sec 128
+#define ZK_sound_sec 1 // was 128
 
 /* The ZKPoK ZK_sec. This gives the statistical
  * distance between the ZK simulation and the real
@@ -166,7 +166,7 @@ All rights reserved
  * a circuit using Search_SubCircuit. Only used to simplify the modp
  * circuit
  */
-#define iter_modp_Search_SubCircuit 5 // was 60
+#define iter_modp_Search_SubCircuit 3 // was 60
 
 /* Default sleep setting, for when we put threads to sleep 
  * This is a quarter of a second

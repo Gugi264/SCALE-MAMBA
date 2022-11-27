@@ -159,6 +159,7 @@ void Run_Scale(unsigned int my_number, unsigned int no_online_threads,
   Get_Connections(ssocket, csockets, portnum, my_number, SD, verbose - 2);
   printf("All connections now done\n");
 
+
   FHE_Industry industry(number_FHE_threads);
 
   global_time.start();
@@ -343,6 +344,7 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
   if (num < 10000 && num5 == 4)
     {
       P.print_offline();
+       exit(0);
     }
 #endif
   if (num < 10000 && num5 == 4)
@@ -350,6 +352,7 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
       printf(BENCH_TEXT_BOLD BENCH_COLOR_RED BENCH_MAGIC_START
              "Number instructions executed in online thread %d is %ld \n" BENCH_MAGIC_END BENCH_ATTR_RESET,
              num_online, P.number_instructions);
+
     }
 }
 

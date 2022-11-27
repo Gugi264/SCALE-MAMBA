@@ -1,0 +1,8 @@
+@for_range(10)
+def f(i):
+    a,b,c = sint.get_random_triple()
+    d = a*c
+    f = b*c
+    print_ln("this should be equal %s, %s", (a*b).reveal(), c.reveal())
+    print_ln("this is value a; %s", a.reveal())
+    #print_whoami()
