@@ -341,6 +341,7 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
 #endif
 
 #ifdef BENCH_OFFLINE
+  cout << "finished " << endl;
   if (num < 10000 && num5 == 4)
     {
       P.print_offline();

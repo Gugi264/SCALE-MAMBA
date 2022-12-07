@@ -1,5 +1,6 @@
 a = MemValue(sint.get_random_int(5))
 def loop_body(i):
+    print_ln(i)
 	a.write(a*i)
 
 range_loop(loop_body, 1, 5)
