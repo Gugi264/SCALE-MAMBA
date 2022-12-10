@@ -209,8 +209,10 @@ void Run_Scale(unsigned int my_number, unsigned int no_online_threads,
   fflush(stdout);
   for (unsigned int i= 0; i < tnthreads; i++)
     {
+      cout << "before join" << i << endl;
       threads[i].join();
       cout << "Joined Thread " << i << endl;
+
     }
 
   Close_Connections(ssocket, csockets, my_number);
@@ -289,12 +291,12 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
                        *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
             break;
           case 1:
-            square_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
-                         *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
+            /*square_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
+                         *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);*/
             break;
           case 2:
-            bit_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
-                      *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
+            /*bit_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
+                      *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);*/
             break;
           case 3:
             inputs_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),

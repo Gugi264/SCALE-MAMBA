@@ -99,10 +99,11 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string> &encryp
         lock_guard<mutex> lk(mu);
         retVal = ev.get_message()->get_bool();
         finished = true;
+        //cout << "notifiny all" << endl;
         cond.notify_all();
     });
     h.set_fail_listener([&]() {
-        HIGHLIGHT("sio failed");
+        HIGHLIGHT("sio ledger failed");
     });
     h.connect(ledgerAddress_);
     nlohmann::json j;
@@ -127,17 +128,22 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string> &encryp
     h.socket()->emit("reserve", to_string(j));
 
     unique_lock<mutex> lk(mu);
-    cond.wait(mu, [&finished] { return finished; });
+    cond.wait(mu, [&] { return finished; });
     lk.unlock();
     if (!retVal) {
         HIGHLIGHT("Error from ledger");
         exit(-1);
     }
+    //h.clear_con_listeners();
+    //HIGHLIGHT("before close");
+
     h.sync_close();
+    h.clear_con_listeners();
+    //HIGHLIGHT("after");
 }
 
 void TaasProvider::closeListen(sio::client::close_reason const& reason) {
-    //HIGHLIGHT("one connection closed");
+    HIGHLIGHT("one connection closed");
 }
 
 void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choice, list<Share> &a, list<Share> &b, list<Share> &c) {
@@ -150,10 +156,13 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
     map<int, mutex> mutexes;
     map<int, condition_variable> conditionsMap;
     map<int, bool> broadcastMap;
+    mutex mapMutex;
 
     for (const auto &elem: providersMap_) {
         socketConnectedMap[elem.first] = false;
         broadcastMap[elem.first] = false;
+        mutexes[elem.first];
+        conditionsMap[elem.first];
     }
 
     for (const auto &elem: providersMap_) {
@@ -183,27 +192,35 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
             if (!error) {
                 cout << "Failed parsing transformedshareMsg" << endl;
             }
-            transformedShareMsgMap[transformedShareMsg.coeff()] = transformedShareMsg;
+            unique_lock<mutex> mapLock(mapMutex);
+          transformedShareMsgMap[transformedShareMsg.coeff()] = transformedShareMsg;
+          //for (auto i : transformedShareMsgMap) {
+           //     cout << i.first << " : " << i.second.DebugString() << endl;
+          //}
+          mapLock.unlock();
+          lock_guard<mutex> lk(mutexes[elem.first]);
+          socketConnectedMap[elem.first] = true;
+          conditionsMap[elem.first].notify_all();
+           // cout << "finished with trfs ptp triple " << elem.first << endl;
+            //cout << transformedShareMsg.DebugString() << endl;
 
-            lock_guard<mutex> lk(mutexes[elem.first]);
-            socketConnectedMap[elem.first] = true;
-            conditionsMap[elem.first].notify_all();
-            //OUT("finished with trfs ptp triple");
         });
 
         h->socket()->on("transformshare_broadcast_triple", [&](sio::event &ev) {
-            cout << "In transform share broadcast triple" << endl << flush;
+           // cout << "In transform share broadcast triple" << endl << flush;
             string msg = *ev.get_message()->get_binary();
             BroadcastTransformShareMsg broadcastTransformShareMsg;
             bool error = broadcastTransformShareMsg.ParseFromString(msg);
             if (!error) {
                 cout << "Failed parsing broadcastTransformShareMsg" << endl;
             }
+            unique_lock<mutex> mapLock(mapMutex);
             broadcastTransformShareMsgMap[broadcastTransformShareMsg.coeff()] = broadcastTransformShareMsg;
-
+            mapLock.unlock();
             lock_guard<mutex> lk(mutexes[elem.first]);
             broadcastMap[elem.first] = true;
             conditionsMap[elem.first].notify_all();
+            //cout << "finished brdcast triple" << endl;
         });
 
         h->socket()->on("transformshare_broadcast_rnd", [&](sio::event &ev) {
@@ -246,9 +263,9 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
         {
             unique_lock<mutex> lk(mutexes[elem.first]);
             conditionsMap[elem.first].wait(lk, [&]{return socketConnectedMap[elem.first];});
-            while (!socketConnectedMap[elem.first]) {
+           /* while (!socketConnectedMap[elem.first]) {
                 conditionsMap[elem.first].wait(lk);
-            }
+            }*/
         }
         socketConnectedMap[elem.first] = false;
         jo["uuid"] = uuid;
@@ -273,13 +290,17 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
     for (const auto &elem: providersMap_) {
         {
             unique_lock<mutex> lk(mutexes[elem.first]);
+
             while (!broadcastMap[elem.first]) {
                 conditionsMap[elem.first].wait(lk);
             }
         }
-        // OUT("before sync_close");
-        //socketMap[elem.first].close(); //TODO: make parallel
-        //socketMap[elem.first].clear_con_listeners();
+        //OUT("before sync_close");
+      unique_lock<mutex> lk(mutexes[elem.first]);
+      //socketMap[elem.first].clear_socket_listeners();
+      socketMap[elem.first].sync_close();
+      socketMap[elem.first].clear_con_listeners();//TODO: make parallel
+      //socketMap[elem.first].clear_con_listeners();
         //OUT("after sync_close");
     }
 
@@ -305,11 +326,20 @@ void TaasProvider::checkAllOpeningsAndCreateTriples(map<int, TransformedShareMsg
     map<int, bigint> alpha_bbParts;
     map<int, bigint> c_acParts;
     map<int, bigint> alpha_bcParts;
+    //cout << "transoredsharemsgmap size: " << transformedShareMsgMap.size() << endl;
+    //cout << "brdcast size: " << broadcastTransformShareMsgMap.size() << endl;
 
     for (int i = 0; i < nrOfTriples; ++i) {
         for (const auto &elem: providersMap_) {
+            //cout << "in iteration: " << i << endl;
             auto key = elem.first;
+            //OUT(1);
+            //cout << "key: " << key << endl;
+            //cout << "i trnsformsharedsize: " << transformedShareMsgMap[key].transformedshare_size() << endl;
+            //cout << "i brdcastsize " << broadcastTransformShareMsgMap[key].broadcast_size() << endl;
             auto transformedShare = transformedShareMsgMap[key].transformedshare(i);
+            //OUT(2);
+
             auto broadcastShare = broadcastTransformShareMsgMap[key].broadcast(i);
             aParts[key] = transformedShare.share_a();
             bParts[key] = transformedShare.share_b();
@@ -325,7 +355,7 @@ void TaasProvider::checkAllOpeningsAndCreateTriples(map<int, TransformedShareMsg
             alpha_bcParts[key] = broadcastShare.alpha_bc();
         }
 
-
+        //OUT("after");
         auto aShare = shamirSs_.recoverSecret(aParts);
         auto bShare = shamirSs_.recoverSecret(bParts);
         auto cShare = shamirSs_.recoverSecret(cParts);

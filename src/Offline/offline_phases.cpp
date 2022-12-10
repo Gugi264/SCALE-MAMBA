@@ -167,7 +167,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
 
 //            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
           OCD.mul_mutex[num_online].lock();
-          taasProvider.getTriples(1200, a, b, c);
+          taasProvider.getTriples(2, a, b, c);
           cout << "after getTriples" << endl;
           OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);
@@ -190,6 +190,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
           OCD.mul_mutex[num_online].unlock();
         }
     }
+
 }
 
 void square_phase(int num_online, Player &P, int fake_sacrifice,
