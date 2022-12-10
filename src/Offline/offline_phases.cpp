@@ -117,6 +117,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
 {
   //TAAS stuff
   cout << "before taas stuff " << endl;
+  cout << OCD.minm << endl;
   vector<string> taasServiceProviders;
   taasServiceProviders.push_back("http://10.10.0.74:7001");
   taasServiceProviders.push_back("http://10.10.0.74:7002");
@@ -139,6 +140,16 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   list<Share> a, b, c;
   list<Share>::iterator it;
   int flag;
+  int max_batch_size = 10000;
+  int actual_batch = 5000;
+  if (OCD.minm > max_batch_size) {
+        actual_batch = max_batch_size;
+  } else if (OCD.minm == 0) {
+        actual_batch = 5000;
+  } else {
+        actual_batch = OCD.minm;
+  }
+  cout << "actual_batch: " << actual_batch << endl;
   while (0 == 0)
     {
       //cout << "In while for mult_phas" << endl;
@@ -167,7 +178,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
 
 //            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
           OCD.mul_mutex[num_online].lock();
-          taasProvider.getTriples(2000, a, b, c);
+          taasProvider.getTriples(actual_batch, a, b, c);
           cout << "after getTriples" << endl;
           OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);

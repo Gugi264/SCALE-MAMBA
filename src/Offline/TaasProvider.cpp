@@ -137,8 +137,8 @@ void TaasProvider::sendRequestToLedger(int count, const map<int, string> &encryp
     //h.clear_con_listeners();
     //HIGHLIGHT("before close");
 
-    h.sync_close();
-    h.clear_con_listeners();
+    //h.sync_close();
+    //h.clear_con_listeners();
     //HIGHLIGHT("after");
 }
 
@@ -298,8 +298,8 @@ void TaasProvider::communicateWithSP(int count, string uuid, RequestChoice choic
         //OUT("before sync_close");
       unique_lock<mutex> lk(mutexes[elem.first]);
       //socketMap[elem.first].clear_socket_listeners();
-      socketMap[elem.first].sync_close();
-      socketMap[elem.first].clear_con_listeners();//TODO: make parallel
+      //socketMap[elem.first].sync_close();
+      //socketMap[elem.first].clear_con_listeners();//TODO: make parallel
       //socketMap[elem.first].clear_con_listeners();
         //OUT("after sync_close");
     }
