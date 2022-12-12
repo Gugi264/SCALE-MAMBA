@@ -288,12 +288,12 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
                        *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
             break;
           case 1:
-            square_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
-                         *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
+//            square_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
+//                         *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
             break;
           case 2:
-            bit_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
-                      *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
+//            bit_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
+//                      *(tinfo.pk), *(tinfo.sk), *(tinfo.PTD), *(tinfo.industry), verbose);
             break;
           case 3:
             inputs_phase(num_online, P, (tinfo.SD)->fake_sacrifice, *(tinfo.OCD),
@@ -343,6 +343,7 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
   if (num < 10000 && num5 == 4)
     {
       P.print_offline();
+      exit(0);
     }
 #endif
   if (num < 10000 && num5 == 4)
