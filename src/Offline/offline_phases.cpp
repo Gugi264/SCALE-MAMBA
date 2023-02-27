@@ -116,18 +116,17 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
                 int verbose)
 {
   //TAAS stuff
-  cout << "before taas stuff " << endl;
-  cout << OCD.minm << endl;
-  vector<string> taasServiceProviders;
-  taasServiceProviders.push_back("http://10.10.0.74:7001");
-  taasServiceProviders.push_back("http://10.10.0.74:7002");
-  taasServiceProviders.push_back("http://10.10.0.74:7003");
-  taasServiceProviders.push_back("http://10.10.0.74:7004");
-  taasServiceProviders.push_back("http://10.10.0.74:7005");
-  taasServiceProviders.push_back("http://10.10.0.74:7006");
-  string ledgerAddress = "ws://10.10.0.74:6000";
-//    TaasProvider taasProvider();
-  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
+//  cout << "before taas stuff " << endl;
+//  cout << OCD.minm << endl;
+//  vector<string> taasServiceProviders;
+//  taasServiceProviders.push_back("http://10.10.0.74:7001");
+//  taasServiceProviders.push_back("http://10.10.0.74:7002");
+//  taasServiceProviders.push_back("http://10.10.0.74:7003");
+//  taasServiceProviders.push_back("http://10.10.0.74:7004");
+//  taasServiceProviders.push_back("http://10.10.0.74:7005");
+//  taasServiceProviders.push_back("http://10.10.0.74:7006");
+//  string ledgerAddress = "ws://10.10.0.74:6000";
+//  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
 
 
 
@@ -140,7 +139,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   list<Share> a, b, c;
   list<Share>::iterator it;
   int flag;
-  int max_batch_size = 10000;
+  int max_batch_size = 30000;
   int actual_batch = 2000;
   if (OCD.minm > max_batch_size) {
         actual_batch = max_batch_size;
@@ -176,10 +175,10 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
               fflush(stdout);
             }
 
-//            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
+            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
           OCD.mul_mutex[num_online].lock();
-          taasProvider.getTriples(actual_batch, a, b, c);
-          cout << "after getTriples" << endl;
+//          taasProvider.getTriples(actual_batch, a, b, c);
+//          cout << "after getTriples" << endl;
           OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);
            // cout <<  "macSize: " << a.front().get_macs().size() << endl;
