@@ -347,7 +347,7 @@ void Main_Func(thread_info<SRegint, SBit> &tinfo)
   if (num < 10000 && num5 == 4)
     {
       P.print_offline();
-       exit(0);
+       //exit(0);
     }
 #endif
   if (num < 10000 && num5 == 4)

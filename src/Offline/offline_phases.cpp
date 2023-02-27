@@ -176,10 +176,10 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
             }
 
             offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
-          OCD.mul_mutex[num_online].lock();
+//          OCD.mul_mutex[num_online].lock();
 //          taasProvider.getTriples(actual_batch, a, b, c);
 //          cout << "after getTriples" << endl;
-          OCD.mul_mutex[num_online].unlock();
+//          OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);
            // cout <<  "macSize: " << a.front().get_macs().size() << endl;
             if (verbose > 1)
