@@ -540,7 +540,7 @@ string TaasProvider::downloadCertificateEncryptAndEncode(string provider, const 
     }
     HIGHLIGHT("Error in downloadCertificateEncryptAndEncode");
     return "";
-}prime
+}
 
 
 string TaasProvider::createUUID() {
