@@ -118,17 +118,15 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   //TAAS stuff
 //  cout << "before taas stuff " << endl;
 //  cout << OCD.minm << endl;
-//  vector<string> taasServiceProviders;
-//  taasServiceProviders.push_back("http://10.10.0.74:7001");
-//  taasServiceProviders.push_back("http://10.10.0.74:7002");
-//  taasServiceProviders.push_back("http://10.10.0.74:7003");
-//  taasServiceProviders.push_back("http://10.10.0.74:7004");
-//  taasServiceProviders.push_back("http://10.10.0.74:7005");
-//  taasServiceProviders.push_back("http://10.10.0.74:7006");
-//  string ledgerAddress = "ws://10.10.0.74:6000";
-//  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
-
-
+  vector<string> taasServiceProviders;
+  taasServiceProviders.push_back("http://10.10.0.74:7001");
+  taasServiceProviders.push_back("http://10.10.0.74:7002");
+  taasServiceProviders.push_back("http://10.10.0.74:7003");
+  taasServiceProviders.push_back("http://10.10.0.74:7004");
+  taasServiceProviders.push_back("http://10.10.0.74:7005");
+  taasServiceProviders.push_back("http://10.10.0.74:7006");
+  string ledgerAddress = "ws://10.10.0.74:6000";
+  TaasProvider taasProvider(P, taasServiceProviders, ledgerAddress, pk.p());
 
   // Initialize PRSS stuff
   PRSS prss(P);
@@ -175,11 +173,11 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
               fflush(stdout);
             }
 
-            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
-//          OCD.mul_mutex[num_online].lock();
-//          taasProvider.getTriples(actual_batch, a, b, c);
+//            offline_phase_triples(P, prss, przs, prep, a, b, c, pk, sk, PTD, fake_sacrifice, industry);
+          OCD.mul_mutex[num_online].lock();
+          taasProvider.getTriples(actual_batch, a, b, c);
 //          cout << "after getTriples" << endl;
-//          OCD.mul_mutex[num_online].unlock();
+          OCD.mul_mutex[num_online].unlock();
           P.OP->RunOpenCheck(P, "", 0);
            // cout <<  "macSize: " << a.front().get_macs().size() << endl;
             if (verbose > 1)
