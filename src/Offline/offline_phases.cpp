@@ -146,6 +146,7 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   } else {
         actual_batch = OCD.minm;
   }
+  cout << "OCD.minm" << OCD.minm << endl;
   cout << "actual_batch: " << actual_batch << endl;
   while (0 == 0)
     {
