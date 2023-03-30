@@ -138,16 +138,10 @@ void mult_phase(int num_online, Player &P, int fake_sacrifice,
   list<Share>::iterator it;
   int flag;
   int max_batch_size = 30000;
-  int actual_batch = 2000;
-  if (OCD.minm > max_batch_size) {
-        actual_batch = max_batch_size;
-  } else if (OCD.minm == 0) {
-        actual_batch = 5000;
-  } else {
-        actual_batch = OCD.minm;
-  }
-  cout << "OCD.minm" << OCD.minm << endl;
-  cout << "actual_batch: " << actual_batch << endl;
+  int actual_batch = 30000;
+
+  //cout << "OCD.minm" << OCD.minm << endl;
+  //cout << "actual_batch: " << actual_batch << endl;
   while (0 == 0)
     {
       //cout << "In while for mult_phas" << endl;
