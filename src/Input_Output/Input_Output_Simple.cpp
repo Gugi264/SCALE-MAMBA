@@ -460,7 +460,8 @@ void Input_Output_Simple::output_share(const Share &S, unsigned int channel)
     {
       int triple_rows= nr_rows_in_table("triples");
       int rand_rows= nr_rows_in_table("randVal");
-      triples_choice= (triple_rows <= rand_rows);
+//      triples_choice= (triple_rows <= rand_rows);
+      triples_choice= true;
       sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
       reserve_vectors();
     }
